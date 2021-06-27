@@ -1,44 +1,65 @@
 package flap
 
+import (
+	"github.com/spf13/pflag"
+)
+
+// ValidFuncString is validate function for FlagStr(string)
+type ValidFuncString func(*FlagStr) error
+
 // FlagStr is string flag.
 type FlagStr struct {
-	flag
+	*pflag.Flag
 
-	Default   string
-	Value     string
-	ValidFunc func(f *FlagStr) error
+	value     string
+	validFunc ValidFuncString
 }
 
-// NewFlagStr creates a new FlagStr instance.
-func NewFlagStr(name, short string, opts ...func(*FlagStr)) *FlagStr {
-	flag := &FlagStr{
-		flag: flag{
-			Name:  name,
-			Short: short,
-		},
-	}
-	for _, opt := range opts {
-		opt(flag)
-	}
-	return flag
+// FlagStrVar is create a new FlagStr instance.
+func FlagStrVar(name string, value string, usage string) *FlagStr {
+	return FlagStrVarP(name, "", value, usage)
+}
+
+/// FlagStrVarP is create a new FlagStr instance
+func FlagStrVarP(name, shorthand, value string, usage string) *FlagStr {
+	f := &FlagStr{}
+	f.Flag = newFlag(newStringValue(value, &f.value), name, shorthand, usage)
+
+	return f
+}
+
+// Value is flag value.
+func (f *FlagStr) Value() string {
+	return f.value
 }
 
 // Valid is evaluates the validity of a flag
 func (f *FlagStr) Valid() error {
-	if f.ValidFunc == nil {
+	if f.validFunc == nil {
 		return ErrNoSetValidFunc
 	}
-	return f.ValidFunc(f)
+	return f.validFunc(f)
 }
 
-// WithDefault is to set default value
-func (f *FlagStr) WithDefault(def string) *FlagStr {
-	f.Default = def
+// WithValidFunc is evaluates the validity of a flag
+func (f *FlagStr) WithValidFunc(validate ValidFuncString) *FlagStr {
+	f.validFunc = validate
 	return f
 }
 
-// WithValidFunc is to set validation function
-func (f *FlagStr) WithValidFunc(vFunc func(f *FlagStr) error) *FlagStr {
-	f.ValidFunc = vFunc
-	return f
+type stringValue string
+
+func newStringValue(val string, p *string) *stringValue {
+	*p = val
+	return (*stringValue)(p)
 }
+
+func (s *stringValue) Set(val string) error {
+	*s = stringValue(val)
+	return nil
+}
+func (s *stringValue) Type() string {
+	return "string"
+}
+
+func (s *stringValue) String() string { return string(*s) }

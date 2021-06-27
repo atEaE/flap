@@ -1,14 +1,23 @@
 package flap
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/spf13/pflag"
+)
 
 var (
 	// ErrNoSetValidFunc :
-	ErrNoSetValidFunc = fmt.Errorf("'ValidFunc' is not set")
+	ErrNoSetValidFunc = fmt.Errorf("'validFunc' is not set")
 )
 
-// flag is base struct
-type flag struct {
-	Name  string
-	Short string
+// newFlag is create a new pflag.Flag instance.
+func newFlag(value pflag.Value, name, shorthand, usage string) *pflag.Flag {
+	return &pflag.Flag{
+		Name:      name,
+		Shorthand: shorthand,
+		Usage:     usage,
+		Value:     value,
+		DefValue:  value.String(),
+	}
 }
