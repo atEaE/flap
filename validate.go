@@ -1,5 +1,9 @@
 package valigo
 
+const (
+	empty = ""
+)
+
 // Validator is
 type Validator interface {
 	Valid() error
@@ -37,13 +41,13 @@ func (v *Valigo) StringVarP(arg *string, name string) *stringValidator {
 	return valid
 }
 
-func (v *Valigo) FilapathVar(arg string, name string) *fileValidator {
+func (v *Valigo) FilepathVar(arg string, name string) *fileValidator {
 	valid := &fileValidator{name: name, ptr: stringPtr(arg)}
 	v.list = append(v.list, valid)
 	return valid
 }
 
-func (v *Valigo) FilapathVarP(arg *string, name string) *fileValidator {
+func (v *Valigo) FilepathVarP(arg *string, name string) *fileValidator {
 	valid := &fileValidator{name: name, ptr: arg}
 	v.list = append(v.list, valid)
 	return valid
