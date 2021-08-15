@@ -2,6 +2,7 @@ package valigo
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -43,7 +44,8 @@ func (v *fileValidator) Required(rt requiredType) *fileValidator {
 // Exists will check for the existence of the target file.
 func (v *fileValidator) Exists() *fileValidator {
 	f := func() error {
-		if _, err := os.Stat(*v.ptr); os.IsNotExist(err) {
+		files, err := filepath.Glob(*v.ptr)
+		if err != nil || len(files) == 0 {
 			return newDoesNotExistsError(v.name, *v.ptr)
 		}
 		return nil
@@ -52,15 +54,21 @@ func (v *fileValidator) Exists() *fileValidator {
 	return v
 }
 
-// ExpectedDir is the expected value that the target file is a directory.
-func (v *fileValidator) ExpectedDir() *fileValidator {
+// ExistsDir is the expected value that the target file is a directory.
+func (v *fileValidator) ExistsDir() *fileValidator {
 	f := func() error {
-		stat, err := os.Stat(*v.ptr)
-		if os.IsNotExist(err) {
+		files, err := filepath.Glob(*v.ptr)
+		if err != nil || len(files) == 0 {
 			return newDoesNotExistsError(v.name, *v.ptr)
 		}
-		if !stat.IsDir() {
-			return newNotDirError(v.name, *v.ptr)
+		for _, f := range files {
+			stat, err := os.Stat(f)
+			if os.IsNotExist(err) {
+				return newDoesNotExistsError(v.name, f)
+			}
+			if !stat.IsDir() {
+				return newNotDirError(v.name, f)
+			}
 		}
 		return nil
 	}
@@ -68,15 +76,21 @@ func (v *fileValidator) ExpectedDir() *fileValidator {
 	return v
 }
 
-// ExpectedFile is the expected value that the target file is a file.
-func (v *fileValidator) ExpectedFile() *fileValidator {
+// ExistsFile is the expected value that the target file is a file.
+func (v *fileValidator) ExistsFile() *fileValidator {
 	f := func() error {
-		stat, err := os.Stat(*v.ptr)
-		if os.IsNotExist(err) {
+		files, err := filepath.Glob(*v.ptr)
+		if err != nil || len(files) == 0 {
 			return newDoesNotExistsError(v.name, *v.ptr)
 		}
-		if stat.IsDir() {
-			return newNotFileError(v.name, *v.ptr)
+		for _, f := range files {
+			stat, err := os.Stat(f)
+			if os.IsNotExist(err) {
+				return newDoesNotExistsError(v.name, f)
+			}
+			if stat.IsDir() {
+				return newNotFileError(v.name, f)
+			}
 		}
 		return nil
 	}

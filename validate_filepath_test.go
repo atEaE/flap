@@ -97,3 +97,167 @@ func TestFileValidatorRequired(t *testing.T) {
 		}
 	})
 }
+
+func TestFileValidatorExists(t *testing.T) {
+
+	t.Run("direct filepath", func(t *testing.T) {
+		// setup
+		testcases := []struct {
+			filepath string
+			want     error
+		}{
+			{filepath: "./tests/test.json", want: nil},
+			{filepath: "./tests/sample.json", want: fmt.Errorf("'./tests/sample.json' no such file or directory")},
+		}
+
+		for _, tc := range testcases {
+			// act
+			v := valigo.New()
+			v.FilepathVar(tc.filepath, "filepath").Exists()
+
+			// assert
+			err := v.Validate()
+			if tc.want == nil {
+				require.NoError(t, err)
+			} else {
+				require.Error(t, err)
+				assert.Equal(t, tc.want.Error(), err.Error())
+			}
+		}
+	})
+
+	t.Run("wildcard", func(t *testing.T) {
+		// setup
+		testcases := []struct {
+			filepath string
+			want     error
+		}{
+			{filepath: "./tests/file_validator/*.json", want: nil},
+			{filepath: "./tests/file_validator/*", want: nil},
+			{filepath: "./tests/file_validator/*.go", want: fmt.Errorf("'./tests/file_validator/*.go' no such file or directory")},
+		}
+
+		for _, tc := range testcases {
+			// act
+			v := valigo.New()
+			v.FilepathVar(tc.filepath, "filepath").Exists()
+
+			// assert
+			err := v.Validate()
+			if tc.want == nil {
+				require.NoError(t, err)
+			} else {
+				require.Error(t, err)
+				assert.Equal(t, tc.want.Error(), err.Error())
+			}
+		}
+	})
+}
+
+func TestFileValidatorExistsDir(t *testing.T) {
+	t.Run("direct filepath", func(t *testing.T) {
+		// setup
+		testcases := []struct {
+			filepath string
+			want     error
+		}{
+			{filepath: "./tests/file_validator", want: nil},
+			{filepath: "./tests/test.json", want: fmt.Errorf("'./tests/test.json' is not directory")},
+		}
+
+		for _, tc := range testcases {
+			// act
+			v := valigo.New()
+			v.FilepathVar(tc.filepath, "filepath").ExistsDir()
+
+			// assert
+			err := v.Validate()
+			if tc.want == nil {
+				require.NoError(t, err)
+			} else {
+				require.Error(t, err)
+				assert.Equal(t, tc.want.Error(), err.Error())
+			}
+		}
+	})
+
+	t.Run("wildcard", func(t *testing.T) {
+		// setup
+		testcases := []struct {
+			filepath string
+			want     error
+		}{
+			{filepath: "./tests/file_validator/ok_isdir/*.docker", want: nil},
+			{filepath: "./tests/file_validator/ng_isdir/*.docker", want: fmt.Errorf("'tests/file_validator/ng_isdir/2.docker' is not directory")},
+		}
+
+		for _, tc := range testcases {
+			// act
+			v := valigo.New()
+			v.FilepathVar(tc.filepath, "filepath").ExistsDir()
+
+			// assert
+			err := v.Validate()
+			if tc.want == nil {
+				require.NoError(t, err)
+			} else {
+				require.Error(t, err)
+				assert.Equal(t, tc.want.Error(), err.Error())
+			}
+		}
+	})
+}
+
+func TestFileValidatorExistsFile(t *testing.T) {
+	t.Run("direct filepath", func(t *testing.T) {
+		// setup
+		testcases := []struct {
+			filepath string
+			want     error
+		}{
+			{filepath: "./tests/file_validator", want: fmt.Errorf("'./tests/file_validator' is not file")},
+			{filepath: "./tests/test.json", want: nil},
+		}
+
+		for _, tc := range testcases {
+			// act
+			v := valigo.New()
+			v.FilepathVar(tc.filepath, "filepath").ExistsFile()
+
+			// assert
+			err := v.Validate()
+			if tc.want == nil {
+				require.NoError(t, err)
+			} else {
+				require.Error(t, err)
+				assert.Equal(t, tc.want.Error(), err.Error())
+			}
+		}
+	})
+
+	t.Run("wildcard", func(t *testing.T) {
+		// setup
+		testcases := []struct {
+			filepath string
+			want     error
+		}{
+			{filepath: "./tests/file_validator/ok_isfile/*.json", want: nil},
+			{filepath: "./tests/file_validator/ng_isfile/*.json", want: fmt.Errorf("'tests/file_validator/ng_isfile/test2.json' is not file")},
+		}
+
+		for _, tc := range testcases {
+			// act
+			v := valigo.New()
+			v.FilepathVar(tc.filepath, "filepath").ExistsFile()
+
+			// assert
+			err := v.Validate()
+			if tc.want == nil {
+				require.NoError(t, err)
+			} else {
+				require.Error(t, err)
+				assert.Equal(t, tc.want.Error(), err.Error())
+			}
+		}
+	})
+}
