@@ -40,3 +40,8 @@ func newNotDirError(name string, filepath string) *ValidateError {
 func newNotFileError(name string, filepath string) *ValidateError {
 	return newValidateError(name, fmt.Errorf("'%s' is not file", filepath))
 }
+
+// newNotAmongError is create not file error instance.
+func newNotAmongError(name string, value string) *ValidateError {
+	return newValidateError(name, fmt.Errorf("'%s' is not among the candidates", value))
+}

@@ -41,6 +41,20 @@ func (v *Valigo) StringVarP(arg *string, name string) *stringValidator {
 	return valid
 }
 
+func (v *Valigo) StringEnumVar(arg string, name string, enum []string) *stringEnumValidator {
+	valid := &stringEnumValidator{name: name, ptr: stringPtr(arg), enum: enum}
+	valid.list = append(valid.list, valid.contains)
+	v.list = append(v.list, valid)
+	return valid
+}
+
+func (v *Valigo) StringEnumVarP(arg *string, name string, enum []string) *stringEnumValidator {
+	valid := &stringEnumValidator{name: name, ptr: arg, enum: enum}
+	valid.list = append(valid.list, valid.contains)
+	v.list = append(v.list, valid)
+	return valid
+}
+
 func (v *Valigo) FilepathVar(arg string, name string) *fileValidator {
 	valid := &fileValidator{name: name, ptr: stringPtr(arg)}
 	v.list = append(v.list, valid)
