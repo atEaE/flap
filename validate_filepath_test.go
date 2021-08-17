@@ -205,11 +205,11 @@ func TestFileValidatorExistsDir(t *testing.T) {
 			// assert
 			err := v.Validate()
 			if runtime.GOOS == "windows" {
-				if tc.want == nil {
+				if tc.winWant == nil {
 					require.NoError(t, err)
 				} else {
 					require.Error(t, err)
-					assert.Equal(t, tc.want.Error(), err.Error())
+					assert.Equal(t, tc.winWant.Error(), err.Error())
 				}
 			} else {
 				if tc.want == nil {
@@ -273,11 +273,11 @@ func TestFileValidatorExistsFile(t *testing.T) {
 			// assert
 			err := v.Validate()
 			if runtime.GOOS == "windows" {
-				if tc.want == nil {
+				if tc.winWant == nil {
 					require.NoError(t, err)
 				} else {
 					require.Error(t, err)
-					assert.Equal(t, tc.want.Error(), err.Error())
+					assert.Equal(t, tc.winWant.Error(), err.Error())
 				}
 			} else {
 				if tc.want == nil {
