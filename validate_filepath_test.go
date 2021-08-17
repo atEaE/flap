@@ -2,6 +2,7 @@ package valigo_test
 
 import (
 	"fmt"
+	"runtime"
 	"testing"
 
 	"github.com/atEaE/valigo"
@@ -186,9 +187,14 @@ func TestFileValidatorExistsDir(t *testing.T) {
 		testcases := []struct {
 			filepath string
 			want     error
+			winWant  error
 		}{
-			{filepath: "./tests/file_validator/ok_isdir/*.docker", want: nil},
-			{filepath: "./tests/file_validator/ng_isdir/*.docker", want: fmt.Errorf("'tests/file_validator/ng_isdir/2.docker' is not directory")},
+			{filepath: "./tests/file_validator/ok_isdir/*.docker", want: nil, winWant: nil},
+			{
+				filepath: "./tests/file_validator/ng_isdir/*.docker",
+				want:     fmt.Errorf("'tests/file_validator/ng_isdir/2.docker' is not directory"),
+				winWant:  fmt.Errorf("'tests\\file_validator\\ng_isdir\\2.docker' is not directory"),
+			},
 		}
 
 		for _, tc := range testcases {
@@ -198,11 +204,20 @@ func TestFileValidatorExistsDir(t *testing.T) {
 
 			// assert
 			err := v.Validate()
-			if tc.want == nil {
-				require.NoError(t, err)
+			if runtime.GOOS == "windows" {
+				if tc.want == nil {
+					require.NoError(t, err)
+				} else {
+					require.Error(t, err)
+					assert.Equal(t, tc.want.Error(), err.Error())
+				}
 			} else {
-				require.Error(t, err)
-				assert.Equal(t, tc.want.Error(), err.Error())
+				if tc.want == nil {
+					require.NoError(t, err)
+				} else {
+					require.Error(t, err)
+					assert.Equal(t, tc.want.Error(), err.Error())
+				}
 			}
 		}
 	})
@@ -240,9 +255,14 @@ func TestFileValidatorExistsFile(t *testing.T) {
 		testcases := []struct {
 			filepath string
 			want     error
+			winWant  error
 		}{
 			{filepath: "./tests/file_validator/ok_isfile/*.json", want: nil},
-			{filepath: "./tests/file_validator/ng_isfile/*.json", want: fmt.Errorf("'tests/file_validator/ng_isfile/test2.json' is not file")},
+			{
+				filepath: "./tests/file_validator/ng_isfile/*.json",
+				want:     fmt.Errorf("'tests/file_validator/ng_isfile/test2.json' is not file"),
+				winWant:  fmt.Errorf("'tests\\file_validator\\ng_isfile\\test2.json' is not file"),
+			},
 		}
 
 		for _, tc := range testcases {
@@ -252,11 +272,20 @@ func TestFileValidatorExistsFile(t *testing.T) {
 
 			// assert
 			err := v.Validate()
-			if tc.want == nil {
-				require.NoError(t, err)
+			if runtime.GOOS == "windows" {
+				if tc.want == nil {
+					require.NoError(t, err)
+				} else {
+					require.Error(t, err)
+					assert.Equal(t, tc.want.Error(), err.Error())
+				}
 			} else {
-				require.Error(t, err)
-				assert.Equal(t, tc.want.Error(), err.Error())
+				if tc.want == nil {
+					require.NoError(t, err)
+				} else {
+					require.Error(t, err)
+					assert.Equal(t, tc.want.Error(), err.Error())
+				}
 			}
 		}
 	})
