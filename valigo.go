@@ -43,6 +43,16 @@ func (v *Valigo) StringVarP(arg *string, name string) *stringValidator {
 	return valid
 }
 
+func (v *Valigo) IntVar(arg int, name string) *intValidator {
+	return v.IntVarP(&arg, name)
+}
+
+func (v *Valigo) IntVarP(arg *int, name string) *intValidator {
+	valid := &intValidator{name: name, ptr: arg}
+	v.list = append(v.list, valid)
+	return valid
+}
+
 func (v *Valigo) EnumVar(arg interface{}, name string, enums []interface{}) *enumValidator {
 	val := reflect.ValueOf(arg)
 	if val.Kind() == reflect.Ptr {

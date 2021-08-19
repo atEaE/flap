@@ -26,6 +26,16 @@ func newRequiredError(name string) *ValidateError {
 	return newValidateError(name, fmt.Errorf("'%s' is required", name))
 }
 
+// newMaxIntValueOverError is create max intvalue over error instance.
+func newMaxIntValueOverError(name string, limit int) *ValidateError {
+	return newValidateError(name, fmt.Errorf("value of '%s' must be less than or equal to %d", name, limit))
+}
+
+// newMinIntValueOverError is create min intvalue over error instance.
+func newMinIntValueOverError(name string, limit int) *ValidateError {
+	return newValidateError(name, fmt.Errorf("value of '%s' must be greater than or equal to %d", name, limit))
+}
+
 // newDoesNotExistsError is create doesnot exists error instance.
 func newDoesNotExistsError(name string, filepath string) *ValidateError {
 	return newValidateError(name, fmt.Errorf("'%s' no such file or directory", filepath))
