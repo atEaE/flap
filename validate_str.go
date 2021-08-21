@@ -4,35 +4,46 @@ import "strings"
 
 // stringValidator :
 type stringValidator struct {
-	name     string
-	ptr      *string
-	required bool
-	list     []func() error
+	name            string
+	ptr             *string
+	allowEmpty      bool
+	allowBlankEmpty bool
+	list            []func() error
+}
+
+type StringOption func(*stringValidator)
+
+func DeniedEmpty() StringOption {
+	return func(v *stringValidator) {
+		v.allowEmpty = false
+	}
+}
+
+func DeniedBlankEmpty() StringOption {
+	return func(v *stringValidator) {
+		v.allowBlankEmpty = false
+	}
 }
 
 var _ Validator = &stringValidator{} // interface assertion.
 
 // Required means that the value must be entered.
-func (v *stringValidator) Required(rt requiredType) *stringValidator {
+func (v *stringValidator) Required() *stringValidator {
 	f := func() error {
 		if v.ptr == nil {
 			return newRequiredError(v.name)
 		}
-		val := *v.ptr
-		switch rt {
-		case RequiredDeniedEmpty:
-			if empty == val {
+		if !v.allowEmpty {
+			if empty == *v.ptr {
 				return newRequiredError(v.name)
 			}
-			return nil
-		case RequiredDeniedEmptyWithTrimspace:
-			if empty == strings.TrimSpace(val) {
-				return newRequiredError(v.name)
-			}
-			return nil
-		default: // RequiredAllowEmpty
-			return nil
 		}
+		if !v.allowBlankEmpty {
+			if empty == strings.TrimSpace(*v.ptr) {
+				return newRequiredError(v.name)
+			}
+		}
+		return nil
 	}
 	v.list = append(v.list, f)
 	return v

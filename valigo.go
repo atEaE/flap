@@ -33,12 +33,15 @@ func (v *Valigo) Validate() error {
 	return nil
 }
 
-func (v *Valigo) StringVar(arg string, name string) *stringValidator {
-	return v.StringVarP(&arg, name)
+func (v *Valigo) StringVar(arg string, name string, opt ...StringOption) *stringValidator {
+	return v.StringVarP(&arg, name, opt...)
 }
 
-func (v *Valigo) StringVarP(arg *string, name string) *stringValidator {
-	valid := &stringValidator{name: name, ptr: arg}
+func (v *Valigo) StringVarP(arg *string, name string, opt ...StringOption) *stringValidator {
+	valid := &stringValidator{name: name, ptr: arg, allowEmpty: true, allowBlankEmpty: true}
+	for _, o := range opt {
+		o(valid)
+	}
 	v.list = append(v.list, valid)
 	return valid
 }

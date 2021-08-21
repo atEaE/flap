@@ -10,7 +10,7 @@ import (
 )
 
 func TestStringValidatorRequired(t *testing.T) {
-	t.Run("RequiredAllowEmpty", func(t *testing.T) {
+	t.Run("allow empty", func(t *testing.T) {
 		// setup
 		testcases := []struct {
 			name  string
@@ -26,7 +26,7 @@ func TestStringValidatorRequired(t *testing.T) {
 		for _, tc := range testcases {
 			// act
 			v := valigo.New()
-			v.StringVarP(tc.value, tc.name).Required(valigo.RequiredAllowEmpty)
+			v.StringVarP(tc.value, tc.name).Required()
 
 			// assert
 			err := v.Validate()
@@ -39,7 +39,7 @@ func TestStringValidatorRequired(t *testing.T) {
 		}
 	})
 
-	t.Run("RequiredDeniedEmpty", func(t *testing.T) {
+	t.Run("denied empty", func(t *testing.T) {
 		// setup
 		testcases := []struct {
 			name  string
@@ -55,7 +55,7 @@ func TestStringValidatorRequired(t *testing.T) {
 		for _, tc := range testcases {
 			// act
 			v := valigo.New()
-			v.StringVarP(tc.value, tc.name).Required(valigo.RequiredDeniedEmpty)
+			v.StringVarP(tc.value, tc.name, valigo.DeniedEmpty()).Required()
 
 			// assert
 			err := v.Validate()
@@ -68,7 +68,7 @@ func TestStringValidatorRequired(t *testing.T) {
 		}
 	})
 
-	t.Run("DeniedEmptyWithTrimspace", func(t *testing.T) {
+	t.Run("denied empty and denied blank empty", func(t *testing.T) {
 		// setup
 		testcases := []struct {
 			name  string
@@ -84,7 +84,7 @@ func TestStringValidatorRequired(t *testing.T) {
 		for _, tc := range testcases {
 			// act
 			v := valigo.New()
-			v.StringVarP(tc.value, tc.name).Required(valigo.RequiredDeniedEmptyWithTrimspace)
+			v.StringVarP(tc.value, tc.name, valigo.DeniedEmpty(), valigo.DeniedBlankEmpty()).Required()
 
 			// assert
 			err := v.Validate()
