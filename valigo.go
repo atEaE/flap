@@ -156,12 +156,15 @@ func (v *Valigo) EnumVarP(arg interface{}, name string, enums []interface{}) *en
 	return valid
 }
 
-func (v *Valigo) FilepathVar(arg string, name string) *fileValidator {
-	return v.FilepathVarP(&arg, name)
+func (v *Valigo) FilepathVar(arg string, name string, opt ...FilepathOption) *filepathValidator {
+	return v.FilepathVarP(&arg, name, opt...)
 }
 
-func (v *Valigo) FilepathVarP(arg *string, name string) *fileValidator {
-	valid := &fileValidator{name: name, ptr: arg}
+func (v *Valigo) FilepathVarP(arg *string, name string, opt ...FilepathOption) *filepathValidator {
+	valid := &filepathValidator{name: name, ptr: arg, allowEmpty: true, allowBlankEmpty: true}
+	for _, o := range opt {
+		o(valid)
+	}
 	v.list = append(v.list, valid)
 	return valid
 }

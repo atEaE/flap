@@ -11,7 +11,7 @@ import (
 )
 
 func TestFileValidatorRequired(t *testing.T) {
-	t.Run("RequiredAllowEmpty", func(t *testing.T) {
+	t.Run("allow empty", func(t *testing.T) {
 		// setup
 		testcases := []struct {
 			name  string
@@ -27,7 +27,7 @@ func TestFileValidatorRequired(t *testing.T) {
 		for _, tc := range testcases {
 			// act
 			v := valigo.New()
-			v.FilepathVarP(tc.value, tc.name).Required(valigo.RequiredAllowEmpty)
+			v.FilepathVarP(tc.value, tc.name).Required()
 
 			// assert
 			err := v.Validate()
@@ -40,7 +40,7 @@ func TestFileValidatorRequired(t *testing.T) {
 		}
 	})
 
-	t.Run("RequiredDeniedEmpty", func(t *testing.T) {
+	t.Run("denied empty path", func(t *testing.T) {
 		// setup
 		testcases := []struct {
 			name  string
@@ -56,7 +56,7 @@ func TestFileValidatorRequired(t *testing.T) {
 		for _, tc := range testcases {
 			// act
 			v := valigo.New()
-			v.FilepathVarP(tc.value, tc.name).Required(valigo.RequiredDeniedEmpty)
+			v.FilepathVarP(tc.value, tc.name, valigo.DeniedEmptyPath()).Required()
 
 			// assert
 			err := v.Validate()
@@ -69,7 +69,7 @@ func TestFileValidatorRequired(t *testing.T) {
 		}
 	})
 
-	t.Run("DeniedEmptyWithTrimspace", func(t *testing.T) {
+	t.Run("denied empty and denied blank empty path", func(t *testing.T) {
 		// setup
 		testcases := []struct {
 			name  string
@@ -85,7 +85,7 @@ func TestFileValidatorRequired(t *testing.T) {
 		for _, tc := range testcases {
 			// act
 			v := valigo.New()
-			v.FilepathVarP(tc.value, tc.name).Required(valigo.RequiredDeniedEmptyWithTrimspace)
+			v.FilepathVarP(tc.value, tc.name, valigo.DeniedEmptyPath(), valigo.DeniedBlankEmptyPath()).Required()
 
 			// assert
 			err := v.Validate()

@@ -6,43 +6,55 @@ import (
 	"strings"
 )
 
-// fileValidator :
-type fileValidator struct {
-	name string
-	ptr  *string
-	list []func() error
+// filepathValidator :
+type filepathValidator struct {
+	name            string
+	ptr             *string
+	allowEmpty      bool
+	allowBlankEmpty bool
+	list            []func() error
 }
 
-var _ Validator = &fileValidator{} // interface assertion.
+type FilepathOption func(*filepathValidator)
+
+func DeniedEmptyPath() FilepathOption {
+	return func(v *filepathValidator) {
+		v.allowEmpty = false
+	}
+}
+
+func DeniedBlankEmptyPath() FilepathOption {
+	return func(v *filepathValidator) {
+		v.allowBlankEmpty = false
+	}
+}
+
+var _ Validator = &filepathValidator{} // interface assertion.
 
 // Required means that the value must be entered.
-func (v *fileValidator) Required(rt requiredType) *fileValidator {
+func (v *filepathValidator) Required() *filepathValidator {
 	f := func() error {
 		if v.ptr == nil {
 			return newRequiredError(v.name)
 		}
-		val := *v.ptr
-		switch rt {
-		case RequiredDeniedEmpty:
-			if empty == val {
+		if !v.allowEmpty {
+			if empty == *v.ptr {
 				return newRequiredError(v.name)
 			}
-			return nil
-		case RequiredDeniedEmptyWithTrimspace:
-			if empty == strings.TrimSpace(val) {
-				return newRequiredError(v.name)
-			}
-			return nil
-		default: // RequiredAllowEmpty
-			return nil
 		}
+		if !v.allowBlankEmpty {
+			if empty == strings.TrimSpace(*v.ptr) {
+				return newRequiredError(v.name)
+			}
+		}
+		return nil
 	}
 	v.list = append(v.list, f)
 	return v
 }
 
 // Exists will check for the existence of the target file.
-func (v *fileValidator) Exists() *fileValidator {
+func (v *filepathValidator) Exists() *filepathValidator {
 	f := func() error {
 		files, err := filepath.Glob(*v.ptr)
 		if err != nil || len(files) == 0 {
@@ -55,7 +67,7 @@ func (v *fileValidator) Exists() *fileValidator {
 }
 
 // ExistsDir is the expected value that the target file is a directory.
-func (v *fileValidator) ExistsDir() *fileValidator {
+func (v *filepathValidator) ExistsDir() *filepathValidator {
 	f := func() error {
 		files, err := filepath.Glob(*v.ptr)
 		if err != nil || len(files) == 0 {
@@ -77,7 +89,7 @@ func (v *fileValidator) ExistsDir() *fileValidator {
 }
 
 // ExistsFile is the expected value that the target file is a file.
-func (v *fileValidator) ExistsFile() *fileValidator {
+func (v *filepathValidator) ExistsFile() *filepathValidator {
 	f := func() error {
 		files, err := filepath.Glob(*v.ptr)
 		if err != nil || len(files) == 0 {
@@ -99,7 +111,7 @@ func (v *fileValidator) ExistsFile() *fileValidator {
 }
 
 // Valid evaluates the validity of the target in turn.
-func (v *fileValidator) Valid() error {
+func (v *filepathValidator) Valid() error {
 	for _, f := range v.list {
 		if err := f(); err != nil {
 			return err
