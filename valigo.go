@@ -53,6 +53,16 @@ func (v *Valigo) IntVarP(arg *int, name string) *intValidator {
 	return valid
 }
 
+func (v *Valigo) Int64Var(arg int64, name string) *int64Validator {
+	return v.Int64VarP(&arg, name)
+}
+
+func (v *Valigo) Int64VarP(arg *int64, name string) *int64Validator {
+	valid := &int64Validator{name: name, ptr: arg}
+	v.list = append(v.list, valid)
+	return valid
+}
+
 func (v *Valigo) Float64Var(arg float64, name string) *float64Validator {
 	return v.Float64VarP(&arg, name)
 }
