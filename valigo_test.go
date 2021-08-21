@@ -15,6 +15,11 @@ func int64Ptr(i int64) *int64 {
 	return &i
 }
 
+// int32Ptr return integer pointer.
+func int32Ptr(i int32) *int32 {
+	return &i
+}
+
 // float64Ptr return float64 pointer.
 func float64Ptr(f float64) *float64 {
 	return &f
