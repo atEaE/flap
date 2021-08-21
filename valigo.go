@@ -53,6 +53,16 @@ func (v *Valigo) IntVarP(arg *int, name string) *intValidator {
 	return valid
 }
 
+func (v *Valigo) Float64Var(arg float64, name string) *float64Validator {
+	return v.Float64VarP(&arg, name)
+}
+
+func (v *Valigo) Float64VarP(arg *float64, name string) *float64Validator {
+	valid := &float64Validator{name: name, ptr: arg}
+	v.list = append(v.list, valid)
+	return valid
+}
+
 func (v *Valigo) EnumVar(arg interface{}, name string, enums []interface{}) *enumValidator {
 	val := reflect.ValueOf(arg)
 	if val.Kind() == reflect.Ptr {

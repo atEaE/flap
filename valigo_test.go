@@ -1,6 +1,6 @@
 package valigo_test
 
-// stringPtr test utility func
+// stringPtr return string pointer.
 func stringPtr(s string) *string {
 	return &s
 }
@@ -8,4 +8,9 @@ func stringPtr(s string) *string {
 // intPtr return integer pointer.
 func intPtr(i int) *int {
 	return &i
+}
+
+// float64Ptr return float64 pointer.
+func float64Ptr(f float64) *float64 {
+	return &f
 }

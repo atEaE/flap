@@ -2,17 +2,17 @@ package valigo
 
 import "strconv"
 
-// intValidator is integer validator.
-type intValidator struct {
+// float64Validator is float64 validator.
+type float64Validator struct {
 	name string
-	ptr  *int
+	ptr  *float64
 	list []func() error
 }
 
-var _ Validator = &intValidator{} // interface assertion.
+var _ Validator = &float64Validator{} // interface assertion.
 
 // Required means that the value must be entered.
-func (v *intValidator) Required() *intValidator {
+func (v *float64Validator) Required() *float64Validator {
 	f := func() error {
 		if v.ptr == nil {
 			return newRequiredError(v.name)
@@ -24,10 +24,10 @@ func (v *intValidator) Required() *intValidator {
 }
 
 // Max sets the upper limit.
-func (v *intValidator) Max(limit int) *intValidator {
+func (v *float64Validator) Max(limit float64) *float64Validator {
 	f := func() error {
 		if limit < *v.ptr {
-			return newMaxValueOverError(v.name, strconv.Itoa(limit))
+			return newMaxValueOverError(v.name, strconv.FormatFloat(limit, 'f', -1, 64))
 		}
 		return nil
 	}
@@ -36,10 +36,10 @@ func (v *intValidator) Max(limit int) *intValidator {
 }
 
 // Min sets the lower limit.
-func (v *intValidator) Min(limit int) *intValidator {
+func (v *float64Validator) Min(limit float64) *float64Validator {
 	f := func() error {
 		if limit > *v.ptr {
-			return newMinValueOverError(v.name, strconv.Itoa(limit))
+			return newMinValueOverError(v.name, strconv.FormatFloat(limit, 'f', -1, 64))
 		}
 		return nil
 	}
@@ -48,7 +48,7 @@ func (v *intValidator) Min(limit int) *intValidator {
 }
 
 // Valid evaluates the validity of the target in turn.
-func (v *intValidator) Valid() error {
+func (v *float64Validator) Valid() error {
 	for _, f := range v.list {
 		if err := f(); err != nil {
 			return err

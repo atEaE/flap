@@ -27,13 +27,13 @@ func newRequiredError(name string) *ValidateError {
 }
 
 // newMaxIntValueOverError is create max intvalue over error instance.
-func newMaxIntValueOverError(name string, limit int) *ValidateError {
-	return newValidateError(name, fmt.Errorf("value of '%s' must be less than or equal to %d", name, limit))
+func newMaxValueOverError(name string, limit string) *ValidateError {
+	return newValidateError(name, fmt.Errorf("value of '%s' must be less than or equal to %s", name, limit))
 }
 
 // newMinIntValueOverError is create min intvalue over error instance.
-func newMinIntValueOverError(name string, limit int) *ValidateError {
-	return newValidateError(name, fmt.Errorf("value of '%s' must be greater than or equal to %d", name, limit))
+func newMinValueOverError(name string, limit string) *ValidateError {
+	return newValidateError(name, fmt.Errorf("value of '%s' must be greater than or equal to %s", name, limit))
 }
 
 // newDoesNotExistsError is create doesnot exists error instance.
