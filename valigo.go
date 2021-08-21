@@ -43,6 +43,19 @@ func (v *Valigo) StringVarP(arg *string, name string) *stringValidator {
 	return valid
 }
 
+func (v *Valigo) StringSliceVar(arg []string, name string, opt ...StringSliceOption) *stringSliceValidator {
+	return v.StringSliceVarP(&arg, name, opt...)
+}
+
+func (v *Valigo) StringSliceVarP(arg *[]string, name string, opt ...StringSliceOption) *stringSliceValidator {
+	valid := &stringSliceValidator{name: name, ptr: arg, allowEmptySlice: true}
+	for _, o := range opt {
+		o(valid)
+	}
+	v.list = append(v.list, valid)
+	return valid
+}
+
 func (v *Valigo) IntVar(arg int, name string) *intValidator {
 	return v.IntVarP(&arg, name)
 }
